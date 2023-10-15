@@ -11,20 +11,27 @@ class Snake:
     WEST = 180
 
     def __init__(self):
-        self.body = self._init()
+        self.body = []
+        self.build_snake()
         self.head = self.body[0]
 
-    def _init(self) -> list:
+    def build_snake(self) -> None:
         """ Create the snake """
-        body = []
-        for _ in range(3):
-            s = Turtle(shape='square')
-            s.color('white')
-            s.penup()
-            s.back(_ * self.BODY_PART_SIZE)
-            body.append(s)
+        starting_positions = [(0, 0), (-20, 0), (-40, 0)]
+        for position in starting_positions:
+            self.add_bodypart(position)
 
-        return body
+    def extend(self) -> None:
+        """ increase the length of the snake """
+        self.add_bodypart(self.body[-1].position())
+
+    def add_bodypart(self, position):
+        body_part = Turtle(shape='square')
+        body_part.color('white')
+        body_part.penup()
+        body_part.goto(position)
+        self.body.append(body_part)
+
 
     def move(self) -> None:
         """ Move the snake forward """
@@ -39,22 +46,23 @@ class Snake:
 
         self.head.forward(self.BODY_PART_SIZE)
 
-    def up(self):
+    def up(self) -> None:
         """ Set the angle of the snake head to the north """
         if self.head.heading() != self.SOUTH:
             self.head.setheading(to_angle=self.NORTH)
 
-    def down(self):
+    def down(self) -> None:
         """ Set the angle of the snake head to the south """
         if self.head.heading() != self.NORTH:
             self.head.setheading(to_angle=self.SOUTH)
 
-    def left(self):
+    def left(self) -> None:
         """ Set the angle of the snake head to the east """
         if self.head.heading() != self.EAST:
             self.head.setheading(to_angle=self.WEST)
 
-    def right(self):
+    def right(self) -> None:
         """ Set the angle of the snake head to the west """
         if self.head.heading() != self.WEST:
             self.head.setheading(to_angle=self.EAST)
+

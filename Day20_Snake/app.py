@@ -1,5 +1,4 @@
 import time
-import turtle
 from turtle import Turtle, Screen
 from snake import Snake
 
@@ -14,6 +13,13 @@ world.tracer(0)
 
 # initialize snake
 snake = Snake()
+
+# Listen to events
+world.listen()
+world.onkey(key='Up', fun=snake.up)
+world.onkey(key='Down', fun=snake.down)
+world.onkey(key='Left', fun=snake.left)
+world.onkey(key='Right', fun=snake.right)
 
 # Running the game
 game_over = False
