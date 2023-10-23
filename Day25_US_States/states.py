@@ -14,8 +14,7 @@ screen.title('Guess the states. 🇺🇸')
 screen.bgpic('./blank_states_img.gif')
 screen.setup(width=725, height=491)
 
-
-
+print(states)
 
 game = True
 score = 0
@@ -39,5 +38,8 @@ while game:
             states_manager.check_state(guess)
             score += 1
 
-print(states[states['state'].isin(states_manager.guessed)] )
+# keep the remaining states
+remaining_states = states[~states['state'].isin(states_manager.guessed)]
+remaining_states.to_csv('remaining_states.csv', index=False)
+print(remaining_states)
 screen.mainloop()
