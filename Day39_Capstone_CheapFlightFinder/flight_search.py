@@ -1,20 +1,16 @@
-import pprint
-
 import requests
+from datetime import datetime, timedelta
 
-flight_url = "https://api.tequila.kiwi.com"
-flight_api_key = "q3_zrc65tI5qsWBczJMU99HIAlg3ApSY"
+TEQUILA_ENDPOINT = "https://api.tequila.kiwi.com"
+TEQUILA_API_KEY = "q3_zrc65tI5qsWBczJMU99HIAlg3ApSY"
 
-header = {
-    "apikey": flight_api_key
-}
 
 class FlightSearch:
     #This class is responsible for talking to the Flight Search API.
-    def __init__(self):
-        pass
 
     def search_city_iata_code(self, details):
+
+        location_url = f"{TEQUILA_ENDPOINT}/locations/query"
 
         body = {
             "term": details["city"],
@@ -22,10 +18,34 @@ class FlightSearch:
             "limit": 1
         }
 
-        response = requests.get(url=f"{flight_url}/locations/query", params=body, headers=header)
+        response = requests.get(url=location_url, params=body, headers={"apikey": TEQUILA_API_KEY})
         response.raise_for_status()
 
         locations = response.json()["locations"]
-        code = locations[0]['code']
+        return locations[0]['code']
 
-        details['iataCode'] = code
+    def search_for_deals(self, destination):
+
+        search_url = f"{TEQUILA_ENDPOINT}/search"
+
+        tomorrow = datetime.today() + timedelta(days=1)
+
+        params = {
+            "fly_from": "city:AMS",
+            "fly_to": f"city:{destination['iataCode']}",
+            "date_from": tomorrow.strftime("%d/%m/%Y"),
+            "date_to": (tomorrow + timedelta(days=6*30)).strftime("%d/%m/%Y"),
+            "nights_in_dst_from": 7,
+            "nights_in_dst_to": 28,
+            "one_for_city": 1,
+            "max_stopovers": 0,
+            "price_to": destination['lowestPrice'],
+            "curr": 'EUR'
+        }
+
+        response = requests.get(url=search_url, params=params, headers={"apikey": TEQUILA_API_KEY})
+        response.raise_for_status()
+        data = response.json()
+
+        return data
+

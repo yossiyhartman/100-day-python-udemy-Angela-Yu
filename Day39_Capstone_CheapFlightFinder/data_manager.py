@@ -1,38 +1,35 @@
 import requests
 
-sheety_endpoint = "https://api.sheety.co/5d834a1f9d7c249a6f8ec4d4d7f7a215/udemyFlightDeals/prices"
-sheety_token = "Bearer IUHANGVLJSNHVURIKFADHFJILUSHNRIOLK"
-auth_header = {
-    "Authorization": f"{sheety_token}"
+SHEETY_ENDPOINT = "https://api.sheety.co/5d834a1f9d7c249a6f8ec4d4d7f7a215/udemyFlightDeals/prices"
+SHEETY_API_KEY = "Bearer IUHANGVLJSNHVURIKFADHFJILUSHNRIOLK"
 
-}
 class DataManager:
     #This class is responsible for talking to the Google Sheet.
 
     def __init__(self):
-        pass
+        self.data = {}
 
-    def retrieve(self) -> dict:
-        """
-            Retrieves the data from the Google Spreadsheet
+    def retrieve_data_from_sheet(self) -> dict:
 
-            :return: the data
-        """
-
-        response = requests.get(url=sheety_endpoint, headers=auth_header)
+        response = requests.get(url=SHEETY_ENDPOINT, headers={"Authorization": f"{SHEETY_API_KEY}"})
         response.raise_for_status()
+        self.data = response.json()['prices']
 
-        return response.json()
+        return self.data
 
-    def update_deal(self, deal):
-        put_url = f"{sheety_endpoint}/{deal['id']}"
+    def update_iata_codes(self):
+        for destination in self.data:
+            put_url = f"{SHEETY_ENDPOINT}/{destination['id']}"
 
-        body = {
-            "price": deal
-        }
+            body = {
+                "price": {
+                    "iataCode": destination['iataCode']
+                }
+            }
 
-        response = requests.put(url=put_url, json=body, headers=auth_header)
-        print(response)
+            response = requests.put(url=put_url, json=body, headers={"Authorization": f"{SHEETY_API_KEY}"})
+            print(response.text)
+
 
 
 
