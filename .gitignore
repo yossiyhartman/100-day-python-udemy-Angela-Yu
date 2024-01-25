@@ -1,5 +1,12 @@
+
+# Environment variables
 venv/
 .idea/
+
+# compiler junk
 *.pyc
 *.DS_store
+
+# Secrets files
 secrets.py
+token.txt
